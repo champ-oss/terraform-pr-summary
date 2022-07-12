@@ -53,6 +53,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		if plan.Type == "resource_drift" {
+			continue
+		}
 		if plan.Type == "change_summary" {
 			summary = "👉 " + plan.Message + "\n"
 		}
