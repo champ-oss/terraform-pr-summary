@@ -42,7 +42,6 @@ func main() {
 
 	fmt.Printf("Parsing: %s\n", planFile)
 	planContents, err := os.Open(planFile)
-	defer planContents.Close()
 	if err != nil {
 		panic(err)
 	}
@@ -114,6 +113,6 @@ func postComment(url string, token string, body string) {
 			panic(err)
 		}
 	}
-	defer resp.Body.Close()
+	_ = resp.Body.Close()
 	fmt.Printf("Response status code: %d\n", resp.StatusCode)
 }
