@@ -29,13 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: hashicorp/setup-terraform@v1.3.2
-        with:
-          terraform_version: 1.1.4
-          terraform_wrapper: false
 
       - uses: champ-oss/terraform-pr-summary
         if: github.event_name == 'pull_request'
