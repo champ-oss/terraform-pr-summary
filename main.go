@@ -9,6 +9,7 @@ import (
 	"os"
 )
 
+// Represents a single line from the command: `terraform plan -json`
 type plan struct {
 	Message string `json:"@message"`
 	Type    string `json:"type"`
@@ -20,6 +21,14 @@ type plan struct {
 	} `json:"change"`
 }
 
+// This script parses the output from the command `terraform plan -json` and posts a summary to a GitHub pull request.
+//
+// First run: `terraform plan -json > plan.json`
+// Then run: `go run main.go plan.json <pr comments url> <github token>`
+//
+// <pr comments url> can be retrieved using the GitHub variable: github.event.pull_request.comments_url
+// <github token> can be retrieved using the GitHub variable: secrets.GITHUB_TOKEN
+//
 func main() {
 	var summary string
 	var create []string
@@ -31,6 +40,7 @@ func main() {
 	prUrl := os.Args[2]
 	token := os.Args[3]
 
+	fmt.Printf("Parsing: %s\n", planFile)
 	planContents, err := os.Open(planFile)
 	defer planContents.Close()
 	if err != nil {
@@ -65,20 +75,26 @@ func main() {
 	appendSummary(&summary, update, "🔀 Updated")
 	appendSummary(&summary, replace, "♻️ Replaced")
 	appendSummary(&summary, deleted, "❌ Deleted")
-	fmt.Println(summary)
+	fmt.Printf("Summary: \n%s\n", summary)
 	postComment(prUrl, token, summary)
 }
 
+// appendSummary adds a description and a list of items to the summary text string
 func appendSummary(summary *string, items []string, description string) {
 	if len(items) > 0 {
+		fmt.Printf("Appending %d items for '%s' to summary\n", len(items), description)
 		*summary += fmt.Sprintf("\n**%s**:\n", description)
 		for _, s := range items {
 			*summary += s + "\n"
 		}
+	} else {
+		fmt.Printf("No items for '%s' to append to summary\n", description)
 	}
 }
 
+// postComment sends a POST request to the given url to post the body to a pull request comment
 func postComment(url string, token string, body string) {
+	fmt.Printf("Posting summary to pull request comment: %s\n", url)
 	data, err := json.Marshal(map[string]string{"body": body})
 	if err != nil {
 		panic(err)
@@ -99,5 +115,5 @@ func postComment(url string, token string, body string) {
 		}
 	}
 	defer resp.Body.Close()
-	fmt.Println(resp.Status)
+	fmt.Printf("Response status code: %d\n", resp.StatusCode)
 }
