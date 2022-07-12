@@ -7,7 +7,7 @@ A GitHub Action which adds a comment to a GitHub pull request with a summary of 
 
 ## Example
 
-👉 Plan: 3 to add, 2 to change, 10 to destroy.
+👉 Plan: 1 to add, 2 to change, 1 to destroy.
 
 🛠️ Created:  
 random_password.foo
