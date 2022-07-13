@@ -1,0 +1,14 @@
+name: 'terraform-pr-summary'
+inputs:
+  token:
+    description: 'GitHub Token or PAT'
+    required: true
+    default: ''
+
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        terraform plan -json > plan.json || true
+        go run ${{ github.action_path }}/main.go plan.json ${{ github.event.pull_request.comments_url }} ${{ inputs.token }}
+      shell: bash
