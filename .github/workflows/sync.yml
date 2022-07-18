@@ -11,7 +11,7 @@ jobs:
         with:
           token: ${{ secrets.ACTION_TOKEN }}
 
-      - uses: champ-oss/file-sync@v1.0.28-ea40eb6
+      - uses: champ-oss/file-sync@v1.0.29-3f8953c
         with:
           token: ${{ secrets.ACTION_TOKEN }}
           repo: champ-oss/terraform-module-template
