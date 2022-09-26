@@ -1,0 +1,37 @@
+name: plan
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_version: 1.1.4
+          terraform_wrapper: false
+      - name: init
+        run: terraform init
+      - uses: champ-oss/terraform-pr-summary@d442e9c530eb0684c48d426828b6199b3d1e63f1
+        if: github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+  plan-subdirectory:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1.3.2
+        with:
+          terraform_version: 1.1.4
+          terraform_wrapper: false
+      - name: init
+        working-directory: test
+        run: terraform init
+      - uses: champ-oss/terraform-pr-summary@d442e9c530eb0684c48d426828b6199b3d1e63f1
+        if: github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: test
