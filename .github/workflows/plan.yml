@@ -15,7 +15,7 @@ jobs:
           terraform_wrapper: false
       - name: init
         run: terraform init
-      - uses: champ-oss/terraform-pr-summary@d442e9c530eb0684c48d426828b6199b3d1e63f1
+      - uses: champ-oss/terraform-pr-summary@0a293636c93f71e91e76f9606cd547a0c61f280a
         if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,8 +30,9 @@ jobs:
       - name: init
         working-directory: test
         run: terraform init
-      - uses: champ-oss/terraform-pr-summary@d442e9c530eb0684c48d426828b6199b3d1e63f1
+      - uses: champ-oss/terraform-pr-summary@0a293636c93f71e91e76f9606cd547a0c61f280a
         if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: test
+          var-file: test.tfvars
