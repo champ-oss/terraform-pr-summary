@@ -8,12 +8,18 @@ inputs:
     description: 'Directory to run the action from'
     required: false
     default: '.'
+  var-file:
+    description: 'Optional tfvars file to use when running Terraform plan'
+    required: false
 
 runs:
   using: "composite"
   steps:
     - run: |
-        terraform plan -json > plan.json || true
+        if [[ "${{ inputs.var-file }}" != "" ]]; then
+          VAR_FILE_ARG="-var-file=${{ inputs.var-file }}"
+        fi
+        terraform plan $VAR_FILE_ARG -json > plan.json || true
         go run ${{ github.action_path }}/main.go plan.json ${{ github.event.pull_request.comments_url }} ${{ inputs.token }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}
