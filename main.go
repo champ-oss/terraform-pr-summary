@@ -119,5 +119,5 @@ func postComment(url string, token string, body string) {
 	fmt.Printf("Response status code: %d\n", resp.StatusCode)
 	responseBody, _ := io.ReadAll(resp.Body)
 	_ = resp.Body.Close()
-	fmt.Printf("Response body: %d\n", responseBody)
+	fmt.Printf("Response body: %s\n", string(responseBody))
 }
