@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 )
@@ -28,7 +29,6 @@ type plan struct {
 //
 // <pr comments url> can be retrieved using the GitHub variable: github.event.pull_request.comments_url
 // <github token> can be retrieved using the GitHub variable: secrets.GITHUB_TOKEN
-//
 func main() {
 	var summary string
 	var create []string
@@ -116,6 +116,8 @@ func postComment(url string, token string, body string) {
 			panic(err)
 		}
 	}
-	_ = resp.Body.Close()
 	fmt.Printf("Response status code: %d\n", resp.StatusCode)
+	responseBody, _ := io.ReadAll(resp.Body)
+	_ = resp.Body.Close()
+	fmt.Printf("Response body: %d\n", responseBody)
 }
