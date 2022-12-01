@@ -6,7 +6,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
+	"net/http/httputil"
 	"os"
 )
 
@@ -112,12 +114,11 @@ func postComment(url string, token string, body string) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		if err != nil {
-			panic(err)
-		}
+		panic(err)
 	}
-	fmt.Printf("Response status code: %d\n", resp.StatusCode)
-	responseBody, _ := io.ReadAll(resp.Body)
-	_ = resp.Body.Close()
-	fmt.Printf("Response body: %s\n", string(responseBody))
+	responseBody, err := httputil.DumpResponse(resp, true)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(responseBody)
 }
