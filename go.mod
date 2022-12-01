@@ -1,3 +1,3 @@
 module github.com/champ-oss/terraform-pr-summary
 
-go 1.17
+go 1.18
