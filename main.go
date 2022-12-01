@@ -118,5 +118,5 @@ func postComment(url string, token string, body string) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(responseBody)
+	fmt.Printf("%s\n", string(responseBody))
 }
