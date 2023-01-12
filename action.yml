@@ -20,6 +20,6 @@ runs:
           VAR_FILE_ARG="-var-file=${{ inputs.var-file }}"
         fi
         terraform plan $VAR_FILE_ARG -json > plan.json || true
-        go run ${{ github.action_path }}/main.go plan.json ${{ github.event.pull_request.comments_url }} ${{ inputs.token }}
+        go run ${{ github.action_path }}/main.go plan.json ${{ github.event.pull_request.comments_url }} ${{ inputs.token }} ${{ inputs.var-file }}
       shell: bash
       working-directory: ${{ inputs.working-directory }}

@@ -39,6 +39,8 @@ func main() {
 	planFile := os.Args[1]
 	prUrl := os.Args[2]
 	token := os.Args[3]
+	varFile := os.Args[4]
+	fmt.Println(varFile)
 
 	fmt.Printf("Parsing: %s\n", planFile)
 	planContents, err := os.Open(planFile)
