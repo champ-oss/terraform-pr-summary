@@ -15,7 +15,7 @@ jobs:
           terraform_wrapper: false
       - name: init
         run: terraform init
-      - uses: champ-oss/terraform-pr-summary@c30f0ad6703b1f2fa880c2e59a538c15231828c8
+      - uses: ./
         if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -30,7 +30,7 @@ jobs:
       - name: init
         working-directory: test
         run: terraform init
-      - uses: champ-oss/terraform-pr-summary@c30f0ad6703b1f2fa880c2e59a538c15231828c8
+      - uses: ./
         if: github.event_name == 'pull_request'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
