@@ -35,12 +35,15 @@ func main() {
 	var update []string
 	var replace []string
 	var deleted []string
+	var varFile string
 
 	planFile := os.Args[1]
 	prUrl := os.Args[2]
 	token := os.Args[3]
-	varFile := os.Args[4]
-	fmt.Println(varFile)
+
+	if len(os.Args) >= 5 {
+		varFile = os.Args[4]
+	}
 
 	fmt.Printf("Parsing: %s\n", planFile)
 	planContents, err := os.Open(planFile)
@@ -58,8 +61,11 @@ func main() {
 		if plan.Type == "resource_drift" {
 			continue
 		}
-		if plan.Type == "change_summary" {
+		if varFile == "" && plan.Type == "change_summary" {
 			summary = "👉 " + plan.Message + "\n"
+		}
+		if varFile != "" && plan.Type == "change_summary" {
+			summary = "👉 " + varFile + " " + plan.Message + "\n"
 		}
 		if plan.Change.Action == "create" {
 			create = append(create, plan.Change.Resource.Addr)
