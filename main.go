@@ -65,7 +65,7 @@ func main() {
 			summary = "👉 " + plan.Message + "\n"
 		}
 		if varFile != "" && plan.Type == "change_summary" {
-			summary = "👉 " + plan.Message + " (" + varFile + ")\n"
+			summary = "👉 " + plan.Message + "\n" + varFile + "\n"
 		}
 		if plan.Change.Action == "create" {
 			create = append(create, plan.Change.Resource.Addr)
