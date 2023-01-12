@@ -11,6 +11,7 @@ inputs:
   var-file:
     description: 'Optional tfvars file to use when running Terraform plan'
     required: false
+    default: ''
 
 runs:
   using: "composite"
