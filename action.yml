@@ -2,8 +2,8 @@ name: 'terraform-pr-summary'
 inputs:
   token:
     description: 'GitHub Token or PAT'
-    required: true
-    default: ''
+    required: false
+    default: ${{ github.token }}
   working-directory:
     description: 'Directory to run the action from'
     required: false
