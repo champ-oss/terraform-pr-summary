@@ -30,7 +30,7 @@ runs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'github-actions[bot]'
-        body-includes: 'Terraform Plan (${{ inputs.identifier }})'
+        body-includes: ${{ inputs.identifier != '' && 'Terraform Plan (${{ inputs.identifier }})' || 'Terraform Plan' }}
 
     - uses: peter-evans/create-or-update-comment@v3
       with:

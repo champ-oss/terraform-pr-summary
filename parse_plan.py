@@ -52,7 +52,7 @@ def build_output(resource_changes: List[dict]) -> str:
     if IDENTIFIER:
         output = f'**Terraform Plan ({IDENTIFIER})**\n\n'
     else:
-        output = f'**Terraform Plan **\n\n'
+        output = f'**Terraform Plan**\n\n'
 
     output += f'👉 {len(create)} to create, {len(update)} to update, ' \
               f'{len(replace)} to replace, {len(delete)} to destroy\n'
