@@ -1,6 +1,9 @@
 import json
+import os
 import sys
 from typing import List
+
+IDENTIFIER = os.getenv('IDENTIFIER', '')
 
 
 def parse_resource_changes(plan_json_file: str) -> List[dict]:
@@ -46,7 +49,11 @@ def build_output(resource_changes: List[dict]) -> str:
     replace = get_replace_changes(resource_changes)
     delete = get_delete_changes(resource_changes)
 
-    output = f'**Terraform Plan**\n'
+    if IDENTIFIER:
+        output = f'**Terraform Plan ({IDENTIFIER})**\n\n'
+    else:
+        output = f'**Terraform Plan**\n\n'
+
     output += f'👉 {len(create)} to create, {len(update)} to update, ' \
               f'{len(replace)} to replace, {len(delete)} to destroy\n'
     output = append_to_output(output, create, '🛠️ Created')
