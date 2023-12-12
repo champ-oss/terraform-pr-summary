@@ -19,9 +19,17 @@ runs:
         python ${{ github.action_path }}/parse_plan.py plan.json > summary.txt
       shell: bash
       working-directory: ${{ inputs.working-directory }}
-      id: summary
-    - name: Create comment
-      uses: peter-evans/create-or-update-comment@v3
+
+    - uses: peter-evans/find-comment@v2
+      id: fc
       with:
         issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Plan
+
+    - uses: peter-evans/create-or-update-comment@v3
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
         body-path: ${{ inputs.working-directory }}/summary.txt
+        edit-mode: replace
