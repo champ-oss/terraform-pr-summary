@@ -11,21 +11,7 @@ jobs:
       - uses: actions/checkout@v3.3.0
       - uses: hashicorp/setup-terraform@v3.0.0
         with:
-          terraform_version: 1.1.4
-          terraform_wrapper: false
-      - name: init
-        run: terraform init
-      - uses: ./
-        if: github.event_name == 'pull_request'
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-  plan-subdirectory:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3.3.0
-      - uses: hashicorp/setup-terraform@v3.0.0
-        with:
-          terraform_version: 1.1.4
+          terraform_version: 1.6.4
           terraform_wrapper: false
       - name: init
         working-directory: test
@@ -35,4 +21,4 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: test
-          var-file: test.tfvars
+          plan-file: test.plan
