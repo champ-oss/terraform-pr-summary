@@ -22,4 +22,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           working-directory: test
           plan-file: test.plan
-          identifier: 'test.tfvars'
+          identifier: 'test1.tfvars'
+      - uses: ./
+        if: github.event_name == 'pull_request'
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          working-directory: test
+          plan-file: test.plan
+          identifier: 'test2.tfvars'
