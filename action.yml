@@ -16,6 +16,6 @@ runs:
   steps:
     - run: |
         terraform show -json ${{ inputs.plan-file }} > plan.json
-        python parse_plan.py plan.json
+        python ${{ github.action_path }}/parse_plan.py plan.json
       shell: bash
       working-directory: ${{ inputs.working-directory }}
