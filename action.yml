@@ -8,7 +8,7 @@ inputs:
     description: 'Directory to run the action from'
     default: '.'
   plan-file:
-    description: 'Terraform plan'
+    description: 'Terraform plan file'
     required: true
   identifier:
     description: 'Custom identifier for Terraform (ex: tfvars name)'
@@ -30,7 +30,7 @@ runs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'github-actions[bot]'
-        body-includes: 'Terraform Plan ${{ inputs.identifier }}'
+        body-includes: 'Terraform Plan (${{ inputs.identifier }})'
 
     - uses: peter-evans/create-or-update-comment@v3
       with:
