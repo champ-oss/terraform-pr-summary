@@ -16,6 +16,13 @@ runs:
   steps:
     - run: |
         terraform show -json ${{ inputs.plan-file }} > plan.json
-        python ${{ github.action_path }}/parse_plan.py plan.json
+        python ${{ github.action_path }}/parse_plan.py plan.json > summary.txt
+        echo "summary=$(cat summary.txt)" >> $GITHUB_OUTPUT
       shell: bash
       working-directory: ${{ inputs.working-directory }}
+      id: summary
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v3
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: ${{ steps.summary.outputs.summary }}
