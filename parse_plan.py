@@ -46,8 +46,8 @@ def build_output(resource_changes: List[dict]) -> str:
     replace = get_replace_changes(resource_changes)
     delete = get_delete_changes(resource_changes)
 
-    output = f'👉 Plan: {len(create)} to create, {len(update)} to update, ' \
-             f'{len(replace)} to replace, {len(delete)} to destroy\n'
+    output = f'👉 **Terraform Plan**\n'
+    output += f'{len(create)} to create, {len(update)} to update, {len(replace)} to replace, {len(delete)} to destroy\n'
     output = append_to_output(output, create, '🛠️ Created')
     output = append_to_output(output, update, '🔀 Updated')
     output = append_to_output(output, replace, '♻️ Replaced')
