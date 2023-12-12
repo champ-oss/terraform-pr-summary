@@ -17,11 +17,6 @@ runs:
     - run: |
         terraform show -json ${{ inputs.plan-file }} > plan.json
         python ${{ github.action_path }}/parse_plan.py plan.json > summary.txt
-        {
-          echo 'summary<<EOF'
-          cat summary.txt
-          echo EOF
-        } >> "$GITHUB_ENV"
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       id: summary
@@ -29,4 +24,4 @@ runs:
       uses: peter-evans/create-or-update-comment@v3
       with:
         issue-number: ${{ github.event.pull_request.number }}
-        body: ${{ steps.summary.outputs.summary }}
+        body-path: ${{ inputs.working-directory }}/summary.txt
