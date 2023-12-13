@@ -13,17 +13,20 @@ inputs:
   identifier:
     description: 'Custom identifier for Terraform (ex: tfvars name)'
     default: ''
+  output-file:
+    description: 'Name of the file to write the summary'
+    default: 'terraform-pr-summary.txt'
 
 runs:
   using: "composite"
   steps:
-    - run: |
-        terraform show -json ${{ inputs.plan-file }} > plan.json
-        python ${{ github.action_path }}/parse_plan.py plan.json > summary.txt
+    - run: python ${{ github.action_path }}/parse_plan.py
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       env:
         IDENTIFIER: ${{ inputs.identifier }}
+        PLAN_FILE: ${{ inputs.plan-file }}
+        OUTPUT_FILE: ${{ inputs.output-file }}
 
     - uses: peter-evans/find-comment@v2
       id: fc
@@ -36,5 +39,5 @@ runs:
       with:
         comment-id: ${{ steps.fc.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
-        body-path: ${{ inputs.working-directory }}/summary.txt
+        body-path: ${{ inputs.working-directory }}/${{ inputs.output-file }}
         edit-mode: replace
