@@ -1,4 +1,5 @@
 name: 'terraform-pr-summary'
+description: Parses a Terraform plan file and adds a summary to a pull request
 inputs:
   token:
     description: 'GitHub Token or PAT'
@@ -6,17 +7,37 @@ inputs:
   working-directory:
     description: 'Directory to run the action from'
     default: '.'
-  var-file:
-    description: 'Optional tfvars file to use when running Terraform plan'
+  plan-file:
+    description: 'Terraform plan file'
+    required: true
+  identifier:
+    description: 'Custom identifier for Terraform (ex: tfvars name)'
+    default: ''
+  output-file:
+    description: 'Name of the file to write the summary'
+    default: 'terraform-pr-summary.txt'
 
 runs:
   using: "composite"
   steps:
-    - run: |
-        if [[ "${{ inputs.var-file }}" != "" ]]; then
-          VAR_FILE_ARG="-var-file=${{ inputs.var-file }}"
-        fi
-        terraform plan $VAR_FILE_ARG -json > plan.json || true
-        go run ${{ github.action_path }}/main.go plan.json ${{ github.event.pull_request.comments_url }} ${{ inputs.token }} ${{ inputs.var-file }}
+    - run: python ${{ github.action_path }}/main.py
       shell: bash
       working-directory: ${{ inputs.working-directory }}
+      env:
+        IDENTIFIER: ${{ inputs.identifier }}
+        PLAN_FILE: ${{ inputs.plan-file }}
+        OUTPUT_FILE: ${{ inputs.output-file }}
+
+    - uses: peter-evans/find-comment@v2
+      id: fc
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: ${{ inputs.identifier != '' && format('Terraform Plan ({0})', inputs.identifier) || 'Terraform Plan' }}
+
+    - uses: peter-evans/create-or-update-comment@v3
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body-path: ${{ inputs.working-directory }}/${{ inputs.output-file }}
+        edit-mode: replace
