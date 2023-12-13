@@ -1,5 +1,5 @@
 coverage:
-	pip3 install coverage
+	pip3 install coverage pytest
 	coverage run -m pytest --ignore=glue
 	coverage html --omit="test_*.py"
 	coverage xml --omit="test_*.py"
@@ -15,4 +15,6 @@ lint:
 	flake8 --exclude=venv/,terraform/ --max-line-length=130 .
 
 test:
+	pip3 install coverage pytest
 	coverage run -m pytest --log-cli-level=INFO
+
