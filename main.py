@@ -77,8 +77,8 @@ def get_replace_changes(resource_changes: List[dict]) -> List[str]:
     :return: list of Terraform resources being replaced
     """
     return [resource['address'] for resource in resource_changes
-            if resource['change']['actions'] == ["delete", "create"] or
-            resource['change']['actions'] == ["create", "delete"]]
+            if resource['change']['actions'] == ['delete', 'create'] or
+            resource['change']['actions'] == ['create', 'delete']]
 
 
 def append_to_output(output: str, items: List[str], description: str) -> str:
@@ -156,7 +156,7 @@ def main() -> None:
     """
     custom_identifier = os.getenv('IDENTIFIER')
     plan_file = os.getenv('PLAN_FILE')
-    output_file = os.getenv('OUTPUT_FILE')
+    output_file = os.getenv('OUTPUT_FILE', 'terraform-pr-summary.txt')
 
     output = build_output_header(custom_identifier)
     plan_json = get_terraform_plan_json(plan_file)
