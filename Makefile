@@ -6,6 +6,7 @@ coverage:
 	open htmlcov/index.html || true
 
 check-coverage:
+	pip3 install coverage pytest
 	coverage run -m pytest --ignore=glue
 	coverage xml --omit="test_*.py"
 	coverage report --fail-under=80

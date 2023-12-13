@@ -50,3 +50,5 @@ override.tf.json
 venv/
 .coverage
 .terraform.lock.hcl
+coverage.xml
+*terraform-pr-summary.txt
