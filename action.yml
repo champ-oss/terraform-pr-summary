@@ -28,7 +28,7 @@ runs:
         PLAN_FILE: ${{ inputs.plan-file }}
         OUTPUT_FILE: ${{ inputs.output-file }}
 
-    - uses: peter-evans/find-comment@v2
+    - uses: peter-evans/find-comment@v3
       id: fc
       with:
         issue-number: ${{ github.event.pull_request.number }}
