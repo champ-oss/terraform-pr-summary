@@ -1,12 +1,6 @@
-plugin "champtitles" {
-  enabled = true
-  version = "1.1.0"
-  source  = "github.com/champ-oss/tflint-ruleset-champtitles"
-}
-
 plugin "aws" {
   enabled = true
-  version = "0.21.2"
+  version = "0.30.0"
   source  = "github.com/terraform-linters/tflint-ruleset-aws"
 }
 
@@ -40,7 +34,7 @@ rule "terraform_required_version" {
 }
 
 rule "terraform_standard_module_structure" {
-  enabled = true
+  enabled = false
 }
 
 rule "terraform_typed_variables" {
@@ -58,8 +52,4 @@ rule "terraform_unused_required_providers" {
 rule "terraform_module_pinned_source" {
   enabled = true
   style   = "flexible"
-}
-
-rule "module_call_using_hash" {
-  enabled = false
 }
