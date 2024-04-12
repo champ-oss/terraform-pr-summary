@@ -49,6 +49,3 @@ override.tf.json
 # Python
 venv/
 .coverage
-.terraform.lock.hcl
-coverage.xml
-*terraform-pr-summary.txt
