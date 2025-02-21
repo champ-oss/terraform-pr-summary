@@ -12,10 +12,10 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - uses: actions/checkout@v4.1.2
-      - uses: hashicorp/setup-terraform@v3.1.2
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.5.7
+          terraform_version: 1.10.5
           terraform_wrapper: false
       - name: init
         working-directory: test
