@@ -4,38 +4,79 @@ inputs:
   token:
     description: 'GitHub Token or PAT'
     default: ${{ github.token }}
+  mode:
+    description: >
+      "plan" (default) summarizes a single plan file.
+      "aggregate" combines JSON summaries from many plans (ex: a matrix) into a single comment.
+    default: 'plan'
   working-directory:
     description: 'Directory to run the action from'
     default: '.'
   plan-file:
-    description: 'Terraform plan file'
-    required: true
+    description: 'Terraform plan file (required for mode: plan)'
+    default: ''
   identifier:
     description: 'Custom identifier for Terraform (ex: tfvars name)'
     default: ''
   output-file:
     description: 'Name of the file to write the summary'
     default: 'terraform-pr-summary.txt'
+  json-file:
+    description: 'Name of the file to write the JSON summary (mode: plan), used as input to mode: aggregate'
+    default: 'terraform-pr-summary.json'
+  comment:
+    description: 'Post the summary as a pull request comment'
+    default: 'true'
+  skip-no-changes:
+    description: >
+      Do not post a comment when the plan has no changes (mode: plan).
+      An existing comment for the same identifier is still updated so it does not go stale.
+    default: 'false'
+  summary-dir:
+    description: 'Directory containing JSON summary files, searched recursively (mode: aggregate)'
+    default: '.'
+  expected-identifiers:
+    description: 'JSON list of identifiers expected in summary-dir, missing ones are reported as failed (mode: aggregate)'
+    default: ''
+
+outputs:
+  has-changes:
+    description: 'true if any plan has creates, updates, replaces or deletes'
+    value: ${{ steps.summary.outputs.has-changes }}
 
 runs:
   using: "composite"
   steps:
     - run: python ${{ github.action_path }}/main.py
+      id: summary
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       env:
+        MODE: ${{ inputs.mode }}
         IDENTIFIER: ${{ inputs.identifier }}
         PLAN_FILE: ${{ inputs.plan-file }}
         OUTPUT_FILE: ${{ inputs.output-file }}
+        JSON_FILE: ${{ inputs.json-file }}
+        SUMMARY_DIR: ${{ inputs.summary-dir }}
+        EXPECTED_IDENTIFIERS: ${{ inputs.expected-identifiers }}
+        HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
 
     - uses: peter-evans/find-comment@v3
       id: fc
+      if: inputs.comment == 'true' && github.event.pull_request.number
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'github-actions[bot]'
-        body-includes: ${{ inputs.identifier != '' && format('Terraform Plan ({0})', inputs.identifier) || 'Terraform Plan' }}
+        body-includes: >-
+          ${{ inputs.mode == 'aggregate' && '<!-- terraform-pr-summary:aggregate -->'
+          || (inputs.identifier != '' && format('Terraform Plan ({0})', inputs.identifier) || 'Terraform Plan') }}
 
     - uses: peter-evans/create-or-update-comment@v4
+      if: >-
+        inputs.comment == 'true' && github.event.pull_request.number && (
+          inputs.mode == 'aggregate' || inputs.skip-no-changes != 'true'
+          || steps.summary.outputs.has-changes == 'true' || steps.fc.outputs.comment-id != ''
+        )
       with:
         comment-id: ${{ steps.fc.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}

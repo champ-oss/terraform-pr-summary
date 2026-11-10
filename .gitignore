@@ -49,3 +49,14 @@ override.tf.json
 # Python
 venv/
 .coverage
+
+# test outputs
+terraform-pr-summary.txt
+terraform-pr-summary.json
+test.txt
+agg/
+agg.txt
+test/no-changes/.terraform/
+test/no-changes/*.plan
+test/destructive/.terraform/
+test/destructive/*.plan
