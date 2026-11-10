@@ -5,12 +5,23 @@ on:
   pull_request:
 
 jobs:
-  plan:
+  plan-matrix:
     runs-on: ubuntu-latest
     permissions:
-      id-token: write
       contents: read
-      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # plans with changes, using the committed test plan
+          - { identifier: 'matrix1.tfvars', dir: 'test' }
+          - { identifier: 'matrix2.tfvars', dir: 'test' }
+          # plans with no changes, generated from an empty config
+          - { identifier: 'nochange1.tfvars', dir: 'test/no-changes' }
+          - { identifier: 'nochange2.tfvars', dir: 'test/no-changes' }
+          - { identifier: 'nochange3.tfvars', dir: 'test/no-changes' }
+          # plan with a create, update, replace and destroy, generated with local state
+          - { identifier: 'destructive.tfvars', dir: 'test/destructive' }
     steps:
       - uses: actions/checkout@v4
       - uses: hashicorp/setup-terraform@v3
@@ -18,25 +29,66 @@ jobs:
           terraform_version: 1.10.5
           terraform_wrapper: false
       - name: init
-        working-directory: test
+        working-directory: ${{ matrix.dir }}
         run: terraform init
+      - name: plan (no changes)
+        if: matrix.dir == 'test/no-changes'
+        working-directory: ${{ matrix.dir }}
+        run: terraform plan -out=test.plan
+      - name: plan (replace and destroy)
+        if: matrix.dir == 'test/destructive'
+        working-directory: ${{ matrix.dir }}
+        run: |
+          terraform apply -auto-approve -var phase=1
+          terraform plan -var phase=2 -out=test.plan
       - uses: ./
         if: github.event_name == 'pull_request'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: test
+          working-directory: ${{ matrix.dir }}
           plan-file: test.plan
-      - uses: ./
+          identifier: ${{ matrix.identifier }}
+          comment: false
+      - uses: actions/upload-artifact@v4
         if: github.event_name == 'pull_request'
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: test
-          plan-file: test.plan
-          identifier: 'test1.tfvars'
-      - uses: ./
-        if: github.event_name == 'pull_request'
+          name: tf-summary-${{ strategy.job-index }}
+          path: ${{ matrix.dir }}/terraform-pr-summary.json
+          retention-days: 1
+
+  plan-summary:
+    needs: plan-matrix
+    if: always() && github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: test
-          plan-file: test.plan
-          identifier: 'test2.tfvars'
+          pattern: tf-summary-*
+          path: summaries
+      - uses: ./
+        id: aggregate
+        with:
+          mode: aggregate
+          summary-dir: summaries
+          expected-identifiers: >-
+            ["matrix1.tfvars", "matrix2.tfvars", "nochange1.tfvars", "nochange2.tfvars", "nochange3.tfvars",
+             "destructive.tfvars"]
+      - name: verify aggregate summary
+        run: |
+          cat terraform-pr-summary.txt
+          grep -q '<!-- terraform-pr-summary:aggregate -->' terraform-pr-summary.txt
+          grep -qF '| 9 | 1 | 1 | 1 |' terraform-pr-summary.txt
+          grep -qF '**Plans reported:** ✅ 6 of 6' terraform-pr-summary.txt
+          grep -qF '<details><summary><b>destructive.tfvars</b> 🔄 1 created, 1 updated, 1 replaced, 1 destroyed</summary>' terraform-pr-summary.txt
+          ! grep -qF 'Terraform Plan (' terraform-pr-summary.txt
+          grep -qxF 'terraform_data.test_replace' terraform-pr-summary.txt
+          grep -qxF 'terraform_data.test_destroy[0]' terraform-pr-summary.txt
+          grep -qF '**❌ Destroyed**:' terraform-pr-summary.txt
+          ! grep -qF '[!WARNING]' terraform-pr-summary.txt
+          grep -qF '3 plan(s) with no changes' terraform-pr-summary.txt
+          ! grep -qF '<b>nochange' terraform-pr-summary.txt
+          ! grep -q 'did not report a result' terraform-pr-summary.txt
+          test "${{ steps.aggregate.outputs.has-changes }}" = "true"
