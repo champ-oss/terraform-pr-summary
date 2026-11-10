@@ -148,7 +148,7 @@ class TestAggregate(unittest.TestCase):
         self.assertIn('| Created | Updated | Replaced | Destroyed |', output)
         self.assertIn('| 1 | 0 | 0 | 1 |', output)
         # plans with changes are collapsed with the identifier and counts as the header
-        self.assertIn('<details><summary><b>env/a.tfvars</b> 🔄 1 created, 0 updated, 0 replaced, 1 destroyed'
+        self.assertIn('<details><summary>🔄 <b>env/a.tfvars</b> 1 created, 0 updated, 0 replaced, 1 destroyed'
                       '</summary>\n\n**🛠️ Created**:\nx\n\n**❌ Destroyed**:\ny\n\n</details>', output)
         self.assertNotIn('Terraform Plan (', output)
         self.assertEqual(2, output.count('<details>'))
@@ -179,8 +179,8 @@ class TestAggregate(unittest.TestCase):
         self.assertLessEqual(len(output), main.MAX_COMMENT_LENGTH)
         self.assertIn('Resource list omitted due to comment size limit', output)
         # every plan keeps its section and counts even when resource lists are omitted
-        self.assertEqual(50, output.count('<summary><b>env/'))
-        self.assertEqual(50, output.count('🔄 50 created, 0 updated, 0 replaced, 1 destroyed'))
+        self.assertEqual(50, output.count('<summary>🔄 <b>env/'))
+        self.assertEqual(50, output.count('</b> 50 created, 0 updated, 0 replaced, 1 destroyed'))
         self.assertIn('| 2500 | 0 | 0 | 50 |', output)
 
     def test_load_summaries_and_main_aggregate(self):

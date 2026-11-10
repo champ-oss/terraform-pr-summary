@@ -240,7 +240,7 @@ def build_plan_details(summary: dict, include_resources: bool = True) -> str:
     lists = [summary.get(key, []) for key in ACTIONS]
     counts = ', '.join(f'{len(items)} {label}' for items, label in
                        zip(lists, ('created', 'updated', 'replaced', 'destroyed')))
-    output = f'<details><summary><b>{summary["identifier"]}</b> 🔄 {counts}</summary>\n'
+    output = f'<details><summary>🔄 <b>{summary["identifier"]}</b> {counts}</summary>\n'
     if include_resources:
         for items, heading in zip(lists, ('🛠️ Created', '🔀 Updated', '♻️ Replaced', '❌ Destroyed')):
             output = append_to_output(output, items, heading)

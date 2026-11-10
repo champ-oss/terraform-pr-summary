@@ -82,7 +82,7 @@ jobs:
           grep -q '<!-- terraform-pr-summary:aggregate -->' terraform-pr-summary.txt
           grep -qF '| 9 | 1 | 1 | 1 |' terraform-pr-summary.txt
           grep -qF '**Plans reported:** ✅ 6 of 6' terraform-pr-summary.txt
-          grep -qF '<details><summary><b>destructive.tfvars</b> 🔄 1 created, 1 updated, 1 replaced, 1 destroyed</summary>' terraform-pr-summary.txt
+          grep -qF '<details><summary>🔄 <b>destructive.tfvars</b> 1 created, 1 updated, 1 replaced, 1 destroyed</summary>' terraform-pr-summary.txt
           ! grep -qF 'Terraform Plan (' terraform-pr-summary.txt
           grep -qxF 'terraform_data.test_replace' terraform-pr-summary.txt
           grep -qxF 'terraform_data.test_destroy[0]' terraform-pr-summary.txt
